@@ -1,46 +1,37 @@
 [package]
 name = "blink"
-version = "0.1.0"
-edition = "2021"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+repository.workspace = true
 
 [dependencies]
-embassy-embedded-hal = { version = "0.1.0" }
-embassy-executor = { version = "0.5.0", features = [
-    "defmt",
-    "arch-cortex-m",      # embassy_executor::main
-    "executor-thread",
-    "executor-interrupt",
-    "integrated-timers",
+embassy-embedded-hal = { workspace = true }
+embassy-executor = { workspace = true, features = [
+    "defmt",                 # the trait `Format` is not implemented for `SpawnError`
+    "task-arena-size-32768", # Writing completed, but LED does not blink -> Used embassy_executor::task
+    "arch-cortex-m",         # Used embassy_executor::main
+    "executor-thread",       # Used embassy_executor::main
+    "integrated-timers",     # rust-lld: error: undefined symbol: _embassy_time_schedule_wake
 ] }
-embassy-time = { version = "0.3.0", features = [
-    "defmt",
-    "defmt-timestamp-uptime",
+embassy-time = { workspace = true }
+embassy-rp = { workspace = true, features = [
+    "critical-section-impl", # rust-lld: error: undefined symbol: _critical_section_1_0_acquire
+    "time-driver",           # undefined symbol: _embassy_time_now
 ] }
-embassy-rp = { version = "0.1.0", features = [
-    "defmt",
-    "unstable-pac",
-    "time-driver",
-    "critical-section-impl",
+
+cyw43 = { workspace = true }
+cyw43-pio = { workspace = true }
+
+cortex-m = { workspace = true }
+cortex-m-rt = { workspace = true }
+
+static_cell = { workspace = true }
+portable-atomic = { workspace = true, features = [
+    "critical-section", # no method named `compare_exchange` found for struct `portable_atomic::AtomicBool` in the current scope
 ] }
-embassy-futures = { version = "0.1.1" }
 
-cyw43 = { version = "0.1.0", features = ["defmt", "firmware-logs"] }
-cyw43-pio = { version = "0.1.0", features = ["defmt", "overclock"] }
+defmt = { workspace = true }
+defmt-rtt = { workspace = true }
 
-cortex-m = { version = "0.7.7", features = ["inline-asm"] }
-cortex-m-rt = { version = "0.7.3" }
-
-futures = { version = "0.3.30", default-features = false, features = [
-    "async-await",
-    "cfg-target-has-atomic", # no method named `compare_exchange` found for struct `portable_atomic::AtomicBool` in the current scope 
-    "unstable",
-] }
-static_cell = { version = "2.0.0" }
-# no method named `compare_exchange` found for struct `portable_atomic::AtomicBool` in the current scope 
-portable-atomic = { version = "1.6.0", features = ["critical-section"] }
-
-embedded-hal = { version = "1.0.0" }
-
-defmt = { version = "0.3.6" }
-defmt-rtt = { version = "0.4.0" }
-panic-probe = { version = "0.3.1", features = ["print-defmt"] }
+panic-probe = { workspace = true }
